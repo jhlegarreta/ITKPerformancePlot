@@ -1,0 +1,3 @@
+*.gz
+.idea
+.ipynb_checkpoints/
