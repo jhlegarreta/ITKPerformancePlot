@@ -1,2 +1,4 @@
-# ITKPerformancePlot
+ITKPerformancePlot
+==================
+
 ITK performance plots
