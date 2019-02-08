@@ -20,9 +20,37 @@ import os
 from os.path import join as pjoin
 
 
-def load_benchmarking_modules_performance_data(data_dir):
+def save_summary(summary_filename, number_of_benchmark_files, modules_performance):
+
+    itk_modules = []
+    itk_distinct_versions = []
+    number_of_modules = 0
+    for module_name, module_dict in modules_performance.items():
+        number_of_modules += 1
+        module_itk_versions = list(module_dict.keys())
+        itk_modules.append({module_name: module_itk_versions})
+        itk_distinct_versions.append([versions for versions in module_dict.keys()
+                                      if versions not in itk_distinct_versions])
+
+    itk_distinct_versions = list(version for versions in itk_distinct_versions for version in versions)
+    itk_distinct_versions = sorted(set(itk_distinct_versions))
+    itk_distinct_versions.sort(key=lambda s: [int(u) for u in s.split('.')])
+    number_itk_distinct_versions = len(itk_distinct_versions)
+
+    data = {'number_of_benchmark_files': number_of_benchmark_files,
+            'number_of_modules': number_of_modules,
+            'number_itk_distinct_versions': number_itk_distinct_versions,
+            'modules_versions': itk_modules}
+
+    with open(summary_filename, 'w') as outfile:
+        json.dump(data, outfile)
+
+
+def load_benchmarking_modules_performance_data(data_dir, summary_filename):
 
     modules_performance = {}
+
+    number_of_benchmark_files = 0
 
     # ToDo
     # Identify the modules affected by a commit so that the (slight?) variations
@@ -64,5 +92,9 @@ def load_benchmarking_modules_performance_data(data_dir):
 
             except ValueError:
                 print(repr(data_string))
+
+        number_of_benchmark_files += 1
+
+    save_summary(summary_filename, number_of_benchmark_files, modules_performance)
 
     return modules_performance
