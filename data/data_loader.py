@@ -38,6 +38,10 @@ def load_benchmarking_modules_performance_data(data_dir):
     # ['SystemInformation']['ITKVersion']). Set the criterion to take one or the
     # other.
 
+    # ToDo
+    # Add some tags that may be interesting for benchmarking (e.g. threading
+    # type, etc.)
+
     for filename in os.listdir(data_dir):
         filename = pjoin(data_dir, filename)
         with open(filename) as data_file:
@@ -50,17 +54,24 @@ def load_benchmarking_modules_performance_data(data_dir):
                     modules_performance[module_name] = {}
 
                 probes_mean_time = df['Probes'][0]['Mean']
+                probes_values = df['Probes'][0]['Values']
                 config_date = df['ITK_MANUAL_BUILD_INFORMATION']['GIT_CONFIG_DATE']
                 commit_hash = df['ITK_MANUAL_BUILD_INFORMATION']['GIT_CONFIG_SHA1']
-                probes = commit_hash, config_date, probes_mean_time
+                probes = commit_hash, config_date, probes_mean_time, probes_values
 
                 itk_version = df['SystemInformation']['ITKVersion']
+                system_name = df['SystemInformation']['OperatingSystem']['Name']
 
-                if itk_version in modules_performance[module_name]:
-                    modules_performance[module_name][itk_version].append(probes)
+                if module_name in modules_performance and \
+                   itk_version not in modules_performance[module_name]:
+                    modules_performance[module_name][itk_version] = {}
+
+                if itk_version in modules_performance[module_name] and \
+                   system_name in modules_performance[module_name][itk_version]:
+                    modules_performance[module_name][itk_version][system_name].append(probes)
                 else:
-                    modules_performance[module_name][itk_version] = []
-                    modules_performance[module_name][itk_version].append(probes)
+                    modules_performance[module_name][itk_version][system_name] = []
+                    modules_performance[module_name][itk_version][system_name].append(probes)
 
             except ValueError:
                 print(repr(data_string))
