@@ -15,12 +15,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import functools
 import itertools
+import operator
 
 import matplotlib.pyplot as plt
 import numpy as np
 
+from collections import OrderedDict
 from visualization.heatmap_utils import heatmap, annotate_heatmap
+
+
+# ToDo
+# Refactor the existing methods to be able to easily switch across
+# visualization types (the data preparation part could be shared for some
+# visualization types if done properly).
 
 
 def plot_module_performance_version_scatter(modules_performance):
@@ -43,10 +52,86 @@ def plot_module_performance_os_scatter(modules_performance):
     # data point. The abscissa would be the ITK version, and points would be
     # colored according to the OS (shown as a legend).
 
-    print('ToDo')
+    colormap = {'Linux': 'red', 'macOS': 'green', 'Windows': 'blue'}
+
+    module_scatter_data = {}
+
+    for module_name, module_dict in modules_performance.items():
+        if module_name not in module_scatter_data:
+            module_scatter_data[module_name] = []
+
+        # Each probed version may have a different number of data points, so a
+        # list of dictionaries needs to be kept
+        for itk_version, os_probes in module_dict.items():
+            for os, probes in os_probes.items():
+                # os, commit_hash, config_date, probes_mean_time = zip(*probes)
+                commit_hash = []
+                config_date = []
+                probes_mean_time = []
+                probes_time_values = []
+                for point in probes:
+                    commit_hash.append(point[0])
+                    config_date.append(point[1])
+                    probes_mean_time.append(point[2])
+                    probes_time_values.append(point[3])
+
+                probes_time_values = functools.reduce(operator.concat, probes_time_values)
+
+                module_version_os_data = {itk_version: {os: probes_time_values}}
+                module_scatter_data[module_name].append(module_version_os_data)
+
+    # ToDo
+    # Sort the values so that the ITK versions and their corresponding
+    # data points are always in ascending order. Regardless of the
+    # order in which the files where processed. It may well happen
+    # that the filename convention changes or old ITK versions are
+    # re-tested.
+    # Also, for ordering purposes, '4.13.0' is considered to come
+    # before '4.9.0', so more processing than simple sorting will be
+    # required. See the data_loader.save_summary() method.
+    # May be the sorting will need to be done in a utils.version_sort
+    # method to avoid duplicating code.
+
+    for module_name, module_dict in module_scatter_data.items():
+
+        fig, ax = plt.subplots()
+        fig.canvas.set_window_title("Performance stats")  # or benchmarking
+        for elem in module_scatter_data[module_name]:
+            # item = list(elem.items())[0]
+            itk_vers = list(elem.keys())[0]  # or item[0]
+            os_and_vals = list(elem.values())[0]  # or item[1]
+            os = list(os_and_vals.keys())[0]
+            probes = list(os_and_vals.values())[0]
+            itk_version = [itk_vers for _ in range(len(probes))]
+            # ToDo
+            # Slightly perturb the version list using a delta and a sign
+            # depending on the OS, so that the data points are displayed as
+            # three different clusters OS-wise around the ITK version. If the
+            # delta is fixed, each cluster will be a column; if it is a random
+            # number within some limits, they could be scattered around the
+            # ITK version. Adding a random perturbation may be nice
+            # visualization/distribution-wise, but does not really add any
+            # real/useful information.
+            # In order to do that, the ITK version should be cast into a
+            # a real number, and taking care of the MAJOR, MINOR and PATCH
+            # VERSION splitting periods.
+            # delta = 0.01
+            # sign = {'Linux': -1, 'macOS': 0, 'Win': 1}
+            # itk_versions = [version_to_num(itk_v) * delta * sign[os] for itk_v in itk_version]
+
+            ax.scatter(itk_version, probes, c=colormap[os], label=os)
+
+        plt.title('ITK Module: {}'.format(module_name))
+        plt.xlabel('ITK version')
+        plt.ylabel('Mean Probes Time (s)')
+        # Filter duplicate labels
+        handles, labels = plt.gca().get_legend_handles_labels()
+        by_label = OrderedDict(zip(labels, handles))
+        plt.legend(by_label.values(), by_label.keys())
+        plt.show()
 
 
-def plot_module_performance_errorbar(modules_performance):
+def plot_commit_module_performance_errorbar(modules_performance):
     # ToDo
     # Plot the variation of the mean probes time of a given module for the
     # same ITK version but across different commits (i.e. the abscissa would
@@ -55,7 +140,7 @@ def plot_module_performance_errorbar(modules_performance):
     print('ToDo')
 
 
-def plot_module_performance_errorbar(modules_performance):
+def plot_version_module_performance_errorbar(modules_performance):
 
     # ToDo
     # May be a boxplot instead of/in addition to an errobar could be more meaningful:
