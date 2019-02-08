@@ -58,36 +58,51 @@ def plot_module_performance_errorbar(modules_performance):
 def plot_module_performance_errorbar(modules_performance):
 
     # ToDo
-    # Deal with different OS versions
+    # May be a boxplot instead of/in addition to an errobar could be more meaningful:
+    # https://discourse.itk.org/t/itk-5-0-alpha-2-performance/959
+    # See for example:
+    # https://github.com/rasbt/matplotlib-gallery/blob/master/ipynb/boxplots.ipynb
 
     for module_name, module_dict in modules_performance.items():
         module_errbar_data = []
+
         # Each probed version may have a different number of data points, so a
         # list of dictionaries needs to be kept
+
+        # ToDo
+        # Deal with different OS platforms and versions (?)
+        # ToDo
+        # For the moment, pick just the Linux probes.
         for itk_version, probes in module_dict.items():
             # commit_hash, config_date, probes_mean_time = zip(*probes)
             commit_hash = []
             config_date = []
             probes_mean_time = []
-            for point in probes:
-                commit_hash.append(point[0])
-                config_date.append(point[1])
-                probes_mean_time.append(point[2])
+            if 'Linux' in probes:
+                for point in probes['Linux']:
+                    commit_hash.append(point[0])
+                    config_date.append(point[1])
+                    probes_mean_time.append(point[2])
 
             module_version_wise_data = dict(itk_version=itk_version, probes_mean_time=probes_mean_time)
             module_errbar_data.append(module_version_wise_data)
 
         # ToDo
-        # Sort the values so that the itk versions and their corresponding
+        # Sort the values so that the ITK versions and their corresponding
         # data points are always in ascending order. Regardless of the
         # order in which the files where processed. It may well happen
         # that the filename convention changes or old ITK versions are
         # re-tested.
+        # Also, for ordering purposes, '4.13.0' is considered to come
+        # before '4.9.0', so more processing than simple sorting will be
+        # required. See the data_loader.save_summary() method.
+        # May be the sorting will need to be done in a utils.version_sort
+        # method to avoid duplicating code.
         x = [elem['itk_version'] for elem in module_errbar_data]
         # ToDo
-        # Compute the mean for every version and use that a y
+        # Compute the mean for every version and use that as y
         y = [elem['probes_mean_time'][0] for elem in module_errbar_data]
-        # Todo
+        # ToDo
         # Once the mean computed, get all data points, and split them into
         # two groups, those above the mean and those below the mean to
         # properly build the yerr.
@@ -95,10 +110,13 @@ def plot_module_performance_errorbar(modules_performance):
         # iterations performed on each module for a given commit. We are
         # interested in the mean/min/max values over the means across
         # different JSON files, though.
+        # Another option is to compose the error bar using the fastest and
+        # slowest times across the three platforms (macOS, Linux, Windows).
+        #
         # https://matplotlib.org/gallery/statistics/errorbar_features.html
         # yerr = [elem['probes_mean_time'] for elem in module_errbar_data]
 
-        fig = plt.figure("Performance stats") # or benchmarking
+        fig = plt.figure("Performance stats")  # or benchmarking
         # plt.scatter(x=x, y=y)
         plt.errorbar(x=x, y=y)
         plt.title('ITK Module: {}'.format(module_name))
@@ -120,8 +138,7 @@ def plot_historical_performance_heatmap(modules_performance):
 
     # ToDo
     # Deal with missing values (i.e. modules present in one version but not in
-    # another).
-
+    # another) (check if it is necessary?)
 
     # ToDo
     # Deal with renamed values (i.e. modules that have changed their name from one
@@ -130,6 +147,17 @@ def plot_historical_performance_heatmap(modules_performance):
     # ToDo
     # Assume all modules were benchmarked on the same versions with no missing
     # values and that they contain only a data point per version.
+
+    # ToDo
+    # Sort the values so that the ITK versions and their corresponding data
+    # points are always in ascending order. Regardless of the order in which
+    # the files where processed. It may well happen that are the filename
+    # convention changes or old ITK versions are re-tested.
+    # Also, for ordering purposes, '4.13.0' is considered to come
+    # before '4.9.0', so more processing than simple sorting will be required.
+    # See the data_loader.save_summary() method.
+    # May be the sorting will need to be done in a utils.version_sort
+    # method to avoid duplicating code.
 
     number_modules = len(modules_performance)
     number_versions_per_module = {key: len(value) for key, value in modules_performance.items()}
@@ -160,10 +188,16 @@ def plot_historical_performance_heatmap(modules_performance):
             commit_hash = []
             config_date = []
             probes_mean_time = []
-            for point in probes:
-                commit_hash.append(point[0])
-                config_date.append(point[1])
-                probes_mean_time.append(point[2])
+
+            # ToDo
+            # Deal with different OS platforms and versions (?)
+            # ToDo
+            # For the moment, pick just the Linux probes.
+            if 'Linux' in probes:
+                for point in probes['Linux']:
+                    commit_hash.append(point[0])
+                    config_date.append(point[1])
+                    probes_mean_time.append(point[2])
 
             itk_historical_benchmarks[itk_versions.index(itk_version),
                                       itk_modules.index(module_name)] = probes_mean_time[0]
