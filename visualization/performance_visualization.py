@@ -56,6 +56,8 @@ def plot_module_performance_os_scatter(modules_performance):
 
     module_scatter_data = {}
 
+    # Prepare data
+
     for module_name, module_dict in modules_performance.items():
         if module_name not in module_scatter_data:
             module_scatter_data[module_name] = []
@@ -79,6 +81,8 @@ def plot_module_performance_os_scatter(modules_performance):
 
                 module_version_os_data = {itk_version: {os: probes_time_values}}
                 module_scatter_data[module_name].append(module_version_os_data)
+
+    # Visualize
 
     # ToDo
     # Sort the values so that the ITK versions and their corresponding
@@ -125,9 +129,16 @@ def plot_module_performance_os_scatter(modules_performance):
         plt.xlabel('ITK version')
         plt.ylabel('Mean Probes Time (s)')
         # Filter duplicate labels
+        # ToDo
+        # Filtering duplicate labels would not be necessary if the
+        # visualization was done in a OS-wise (i.e. looping over the colormap
+        # dictionary keys) instead of in module-wise fashion. If the former
+        # turns out to be more straightforward or efficient, it would be
+        # worthwhile implementing it.
         handles, labels = plt.gca().get_legend_handles_labels()
         by_label = OrderedDict(zip(labels, handles))
         plt.legend(by_label.values(), by_label.keys())
+
         plt.show()
 
 
