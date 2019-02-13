@@ -49,12 +49,14 @@ The visualization scripts were tested on all three datasets.
 Usage
 -----
 
+Please follow the steps described:
+
 1. Clone the repository.
-2. Install the requirements using the `requirements.txt <requirements.txt>_`
-file provided.
+2. Install the requirements using the `requirements.txt <requirements.txt>`_
+   file provided.
 3. Run the example visualization program on the input dataset by providing the
-folder where the (uncompressed) benchmarking ``JSON`` files are located, and
-provide a filename for the ``JSON`` summary, e.g.::
+   folder where the (uncompressed) benchmarking ``JSON`` files are located, and
+   provide a filename for the ``JSON`` summary, e.g.::
 
 
     python ./examples/itk_performance_benchmarking.py ./example_data/clay ./output/summary.json
