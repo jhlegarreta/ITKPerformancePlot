@@ -43,7 +43,7 @@ some ITK versions, different number of time probes across modules or versions,
 etc.) that could potentially arise when benchmarking ITK modules across time.
 Thus, they may not reflect actual ITK module performances.
 
-The visualization scripts were tested on all three datasets.
+The visualization scripts were tested on all three datasets using Python 3.6.5.
 
 
 Usage
@@ -52,9 +52,10 @@ Usage
 Please follow the steps described:
 
 1. Clone the repository.
-2. Install the requirements using the `requirements.txt <requirements.txt>`_
+2. Install Python.
+3. Install the requirements using the `requirements.txt <requirements.txt>`_
    file provided.
-3. Run the example visualization program on the input dataset by providing the
+4. Run the example visualization program on the input dataset by providing the
    folder where the (uncompressed) benchmarking ``JSON`` files are located, and
    provide a filename for the ``JSON`` summary, e.g.::
 
