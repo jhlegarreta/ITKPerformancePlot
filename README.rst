@@ -11,18 +11,45 @@ Overview
 ITK performance benchmarking plots.
 
 
+Data
+----
+
+Three dataset are provided for the purpose of demonstrating the visualization
+capabilities of the module:
+
+- `simplified_data.tar.gz <./example_data/simplified_data.tar.gz>`_: a
+  reduced set of files, primarily intended as a restricted benchmarking
+  dataset.
+- `scatter_os_data.tar.gz <./example_data/scatter_os_data.tar.gz>`_: a dataset
+  that is intended to demonstrate the capabilities of the scatter plot
+  visualization method, and provide a means to compare the performance of a
+  module across different platforms and ITK versions.
+- `clay_data.tar.gz <./example_data/clay_data.tar.gz>`_: original ``clay``
+  `benchmarking files <https://data.kitware.com/#folder/5afa58368d777f0685798c5b>`_
+  hosted at `data.kitware.com <https://data.kitware.com>`_, a dataset intended
+  to fully exercise the module.
+
+Note that the ``JSON`` files in the
+`simplified_data.tar.gz <./example_data/simplified_data.tar.gz>`_ and the
+`scatter_os_data.tar.gz <./example_data/scatter_os_data.tar.gz>`_ were
+**manually edited** from the original ``clay``
+`benchmarking files <https://data.kitware.com/#folder/5afa58368d777f0685798c5b>`_
+hosted in the `data.kitware.com <https://data.kitware.com>`_ to simulate
+benchmarks for ITK versions that were not present in the original ``clay``
+dataset, as well as to give rise to some situations (e.g. modules not present in
+some ITK versions, different number of time probes across modules or versions,
+etc.) that could potentially arise when benchmarking ITK modules across time.
+Thus, they may not reflect actual ITK module performances.
+
+The visualization scripts were tested on all three datasets.
+
+
 Example visualizations
 ----------------------
 
-These example visualizations were created using modified versions of the JSON
-files contained in `scatter_os_data.tar.gz <./example_data/scatter_os_data.tar.gz>`_.
-Note that these JSON files were **manually edited** from the original ``clay``
-`benchmarking files <https://data.kitware.com/#folder/5afa58368d777f0685798c5b>`_
-hosted in the `data.kitware.com <https://data.kitware.com>`_ to give rise to
-some situations (e.g. modules not present in some ITK versions, different
-number of time probes across modules or versions, etc.) that could potentially
-arise when benchmarking ITK modules across time. Thus, they may not reflect
-actual ITK module performances.
+These example visualizations were created using the ``JSON`` files contained in
+the `scatter_os_data.tar.gz <./example_data/scatter_os_data.tar.gz>`_ example
+dataset.
 
 Module error bar plot:
 
